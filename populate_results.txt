@@ -1,0 +1,43 @@
+Exercises loaded: 22\nQuizzes loaded: 1\nExercises inserted: 22\nQuizzes inserted: 1\n\nFinal statistics:\n{
+  "success": true,
+  "total_exercises": 22,
+  "total_quizzes": 2,
+  "by_section": {
+    "0": {
+      "exercises": 7,
+      "quizzes": 0
+    },
+    "1": {
+      "exercises": 7,
+      "quizzes": 0
+    },
+    "2": {
+      "exercises": 7,
+      "quizzes": 0
+    },
+    "3": {
+      "exercises": 1,
+      "quizzes": 2
+    },
+    "4": {
+      "exercises": 0,
+      "quizzes": 0
+    },
+    "5": {
+      "exercises": 0,
+      "quizzes": 0
+    },
+    "6": {
+      "exercises": 0,
+      "quizzes": 0
+    },
+    "7": {
+      "exercises": 0,
+      "quizzes": 0
+    },
+    "8": {
+      "exercises": 0,
+      "quizzes": 0
+    }
+  }
+}\n

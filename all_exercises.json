@@ -1,0 +1,551 @@
+[
+  {
+    "section_id": 3,
+    "exercise_id": "ex3_1",
+    "title": "Manual Flow Installation - Drop All",
+    "description": "Create a flow rule that drops all traffic",
+    "instructions": "1. Start Mininet: sudo mn --controller=none\\n2. Add drop rule: sudo ovs-ofctl add-flow s1 'actions=drop'\\n3. Test: pingall (should fail completely)\\n4. View flows: sudo ovs-ofctl dump-flows s1\\n5. Delete flows: sudo ovs-ofctl del-flows s1",
+    "expected_output": "100% packet loss, flow visible with actions=drop",
+    "hints": [
+      "--controller=none prevents automatic flow installation",
+      "Default priority is 32768"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 3,
+    "exercise_id": "ex3_2",
+    "title": "Priority-Based Flow Matching",
+    "description": "Understand how priority affects flow selection",
+    "instructions": "1. Start Mininet without controller\\n2. Add low priority: sudo ovs-ofctl add-flow s1 'priority=100,actions=normal'\\n3. Add high priority drop: sudo ovs-ofctl add-flow s1 'priority=200,actions=drop'\\n4. Test pingall\\n5. Delete high priority flow and test again",
+    "expected_output": "Higher priority rules are matched first",
+    "hints": [
+      "Priority range: 0-65535",
+      "Higher number = higher priority"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 3,
+    "exercise_id": "ex3_3",
+    "title": "Port-Based Forwarding",
+    "description": "Create static forwarding rules based on port numbers",
+    "instructions": "1. sudo mn --topo single,3 --controller=none\\n2. Check port assignments: sudo ovs-ofctl show s1\\n3. Add rule: sudo ovs-ofctl add-flow s1 'in_port=1,actions=output:2'\\n4. Add reverse: sudo ovs-ofctl add-flow s1 'in_port=2,actions=output:1'\\n5. Test: h1 ping -c 2 h2\\n6. Try h1 ping h3 (should fail - no rule)",
+    "expected_output": "h1-h2 works, h1-h3 fails",
+    "hints": [
+      "Bidirectional communication needs two flows",
+      "Check port numbers with ovs-ofctl show"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 3,
+    "exercise_id": "ex3_4",
+    "title": "L2 MAC Address Matching",
+    "description": "Implement static L2 switching with MAC addresses",
+    "instructions": "1. sudo mn --controller=none\\n2. Get MAC addresses: h1 ifconfig, h2 ifconfig\\n3. Add ARP flood rule: sudo ovs-ofctl add-flow s1 'dl_type=0x0806,actions=flood'\\n4. Add MAC forwarding rules for each host\\n5. Test with pingall",
+    "expected_output": "Ping works with static MAC-based forwarding",
+    "hints": [
+      "ARP (0x0806) must be flooded",
+      "dl_src = source MAC, dl_dst = destination MAC"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 3,
+    "exercise_id": "ex3_5",
+    "title": "L3 IP-Based Routing",
+    "description": "Create IP-based forwarding rules",
+    "instructions": "1. sudo mn --controller=none\\n2. Add ARP rule: sudo ovs-ofctl add-flow s1 'dl_type=0x0806,actions=flood'\\n3. Add IP rules: sudo ovs-ofctl add-flow s1 'ip,nw_dst=10.0.0.1,actions=output:1'\\n4. Add rule for 10.0.0.2\\n5. Test with ping",
+    "expected_output": "IP-based routing works",
+    "hints": [
+      "dl_type=0x0800 for IP",
+      "nw_dst = destination IP"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 3,
+    "exercise_id": "ex3_6",
+    "title": "L4 Port Filtering",
+    "description": "Block specific TCP/UDP ports",
+    "instructions": "1. sudo mn --controller=none\\n2. Add base rule: sudo ovs-ofctl add-flow s1 'priority=100,actions=normal'\\n3. Block HTTP: sudo ovs-ofctl add-flow s1 'priority=200,tcp,tp_dst=80,actions=drop'\\n4. Test ICMP (should work)\\n5. Test HTTP with 'h1 python -m SimpleHTTPServer' then 'h2 wget h1:8000'",
+    "expected_output": "ICMP works, HTTP blocked",
+    "hints": [
+      "nw_proto=6 for TCP, 17 for UDP",
+      "tp_dst = destination port"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 3,
+    "exercise_id": "ex3_7",
+    "title": "Flow Statistics Monitoring",
+    "description": "Monitor flow usage through packet/byte counters",
+    "instructions": "1. Set up flows from previous exercises\\n2. Run: sudo ovs-ofctl dump-flows s1\\n3. Note n_packets and n_bytes\\n4. Generate traffic with iperf\\n5. Dump flows again and calculate throughput",
+    "expected_output": "Counters increment with traffic",
+    "hints": [
+      "n_packets = packet count",
+      "n_bytes = byte count",
+      "duration_sec shows flow age"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 4,
+    "exercise_id": "ex4_1",
+    "title": "Analyzing Controller-Installed Flows",
+    "description": "Examine flows installed by the RYU controller",
+    "instructions": "1. Start RYU with simple_switch_13\\n2. Start Mininet\\n3. Run pingall to trigger flow installation\\n4. Examine: sudo ovs-ofctl dump-flows s1\\n5. Identify: priority values, match fields, actions, idle/hard timeouts",
+    "expected_output": "Understanding of controller-generated flow structure",
+    "hints": [
+      "Look for priority levels",
+      "idle_timeout controls flow expiration"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 4,
+    "exercise_id": "ex4_2",
+    "title": "Reactive Mode Analysis",
+    "description": "Observe reactive flow installation behavior",
+    "instructions": "1. Start RYU controller\\n2. Start Mininet\\n3. Before traffic: sudo ovs-ofctl dump-flows s1 (minimal flows)\\n4. Send one ping: h1 ping -c 1 h2\\n5. Dump flows again (new flows appeared)\\n6. Note which flows were added",
+    "expected_output": "Flows appear after first packet",
+    "hints": [
+      "Reactive = on-demand installation",
+      "Watch for MAC-based rules"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 4,
+    "exercise_id": "ex4_3",
+    "title": "Proactive Flow Installation",
+    "description": "Pre-install flows before traffic",
+    "instructions": "1. sudo mn --controller=none\\n2. Pre-install all necessary flows\\n3. Test pingall (should work immediately)\\n4. Compare first-packet latency with reactive mode",
+    "expected_output": "No first-packet penalty",
+    "hints": [
+      "Install ARP and forwarding rules",
+      "All pings should have similar latency"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 4,
+    "exercise_id": "ex4_4",
+    "title": "CONTROLLER Action Testing",
+    "description": "Observe packet-in behavior with CONTROLLER action",
+    "instructions": "1. Start RYU\\n2. Start Mininet\\n3. Add rule: sudo ovs-ofctl add-flow s1 'priority=100,icmp,actions=CONTROLLER'\\n4. Ping and watch RYU terminal for EventOFPPacketIn\\n5. Count packet-in events",
+    "expected_output": "Each ICMP packet triggers packet-in event",
+    "hints": [
+      "CONTROLLER sends packets to controller",
+      "Watch RYU logs for events"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 4,
+    "exercise_id": "ex4_5",
+    "title": "Flow Timeout Configuration",
+    "description": "Experiment with idle and hard timeouts",
+    "instructions": "1. sudo mn --controller=none\\n2. Add flow with timeout: sudo ovs-ofctl add-flow s1 'idle_timeout=10,priority=100,actions=normal'\\n3. Generate traffic\\n4. Wait 10 seconds without traffic\\n5. Dump flows - rule should be gone",
+    "expected_output": "Flow expires after idle timeout",
+    "hints": [
+      "idle_timeout = seconds of no traffic",
+      "hard_timeout = absolute expiration"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 4,
+    "exercise_id": "ex4_6",
+    "title": "Table-Miss Entry Analysis",
+    "description": "Understand the default/miss entry behavior",
+    "instructions": "1. Start RYU + Mininet\\n2. Dump flows: look for priority=0 entry\\n3. This is the table-miss entry\\n4. Note its action (usually CONTROLLER)\\n5. Explain when this entry is used",
+    "expected_output": "Table-miss entry handles unknown packets",
+    "hints": [
+      "Lowest priority (0) is default",
+      "Matches when no other rules match"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 4,
+    "exercise_id": "ex4_7",
+    "title": "Comparing Reactive vs Proactive Performance",
+    "description": "Measure latency differences between modes",
+    "instructions": "1. Reactive: Start RYU, do h1 ping -c 10 h2, note first vs subsequent latency\\n2. Proactive: Pre-install flows, ping again\\n3. Document latency differences\\n4. Calculate first-packet penalty",
+    "expected_output": "Proactive has consistent low latency, reactive has first-packet delay",
+    "hints": [
+      "First packet in reactive mode goes to controller",
+      "Subsequent packets hit installed flows"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 5,
+    "exercise_id": "ex5_1",
+    "title": "Wireshark OpenFlow Capture",
+    "description": "Capture and analyze OpenFlow handshake with Wireshark",
+    "instructions": "1. Start Wireshark: sudo wireshark\\n2. Select 'Loopback: lo' interface\\n3. Apply filter: openflow_v4\\n4. Start RYU controller\\n5. Start Mininet\\n6. Capture HELLO, FEATURES_REQUEST, FEATURES_REPLY messages\\n7. Take screenshots",
+    "expected_output": "OpenFlow handshake messages visible",
+    "hints": [
+      "Use loopback for local controller",
+      "Filter: openflow_v4 for OpenFlow 1.3"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 5,
+    "exercise_id": "ex5_2",
+    "title": "Packet-In Message Analysis",
+    "description": "Capture and analyze PACKET_IN messages",
+    "instructions": "1. Wireshark running with openflow_v4 filter\\n2. Start RYU + Mininet\\n3. Send ping: h1 ping -c 1 h2\\n4. Find PACKET_IN messages in Wireshark\\n5. Examine payload (should contain original ping)",
+    "expected_output": "PACKET_IN contains encapsulated ICMP packet",
+    "hints": [
+      "PACKET_IN carries unknown packets",
+      "Look for ICMP inside OpenFlow message"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 5,
+    "exercise_id": "ex5_3",
+    "title": "Flow-Mod Message Inspection",
+    "description": "Observe FLOW_MOD messages installing flows",
+    "instructions": "1. Wireshark with openflow_v4 filter\\n2. RYU + Mininet running\\n3. Generate traffic\\n4. Find FLOW_MOD messages\\n5. Examine match fields and actions",
+    "expected_output": "FLOW_MOD messages showing flow installation",
+    "hints": [
+      "FLOW_MOD = controller installing flows",
+      "Contains match criteria and actions"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 5,
+    "exercise_id": "ex5_4",
+    "title": "Flow Statistics Collection",
+    "description": "Request and analyze flow statistics",
+    "instructions": "1. Setup RYU + Mininet\\n2. Generate traffic\\n3. Request stats: sudo ovs-ofctl dump-flows s1\\n4. Note: n_packets, n_bytes, duration\\n5. Generate more traffic and compare",
+    "expected_output": "Statistics show traffic patterns",
+    "hints": [
+      "Stats updated in real-time",
+      "duration shows flow age"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 5,
+    "exercise_id": "ex5_5",
+    "title": "Port Statistics Monitoring",
+    "description": "Monitor per-port traffic statistics",
+    "instructions": "1. RYU + Mininet setup\\n2. Baseline: sudo ovs-ofctl dump-ports s1\\n3. Run iperf h1 h2\\n4. Dump ports again\\n5. Calculate throughput from rx/tx byte counters",
+    "expected_output": "Port counters show traffic distribution",
+    "hints": [
+      "rx = received, tx = transmitted",
+      "Compare before/after values"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 5,
+    "exercise_id": "ex5_6",
+    "title": "RYU GUI Topology Visualization",
+    "description": "Use RYU's built-in GUI for topology visualization",
+    "instructions": "1. Start RYU with GUI: ryu-manager --observe-links ryu.app.gui_topology.gui_topology ryu.app.simple_switch_13\\n2. Open browser: http://localhost:8080\\n3. Start Mininet with tree topology\\n4. Observe automatic topology discovery\\n5. Generate traffic and watch flow updates",
+    "expected_output": "Visual topology map with switches and links",
+    "hints": [
+      "--observe-links enables LLDP",
+      "GUI updates in real-time"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 5,
+    "exercise_id": "ex5_7",
+    "title": "LLDP Discovery Analysis",
+    "description": "Analyze LLDP protocol for topology discovery",
+    "instructions": "1. Start Wireshark\\n2. RYU with GUI app\\n3. Start Mininet\\n4. Capture LLDP packets (filter: lldp)\\n5. Examine LLDP contents (chassis ID, port ID)\\n6. Understand how controller builds topology map",
+    "expected_output": "LLDP packets reveal link connectivity",
+    "hints": [
+      "LLDP = Link Layer Discovery Protocol",
+      "Controller uses it to map topology"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 6,
+    "exercise_id": "ex6_1",
+    "title": "MiniEdit GUI Topology Design",
+    "description": "Create a custom topology using MiniEdit graphical interface",
+    "instructions": "1. Launch: sudo ~/mininet/examples/miniedit.py\\n2. Add 3 switches in a triangle\\n3. Add 2 hosts per switch\\n4. Connect all switches together\\n5. Add a remote controller\\n6. Run the topology and test with pingall",
+    "expected_output": "Custom topology with full connectivity",
+    "hints": [
+      "Use toolbar to add nodes",
+      "Right-click for properties",
+      "Click Run to start"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 6,
+    "exercise_id": "ex6_2",
+    "title": "Export MiniEdit Topology Script",
+    "description": "Save MiniEdit topology as Python script",
+    "instructions": "1. Create topology in MiniEdit\\n2. File \u2192 Export Level 2 Script\\n3. Save as myTopo.py\\n4. Exit MiniEdit\\n5. Run: sudo python myTopo.py\\n6. Verify topology loads correctly",
+    "expected_output": "Exported script recreates topology",
+    "hints": [
+      "Level 2 = Python API script",
+      "Script is reusable"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 6,
+    "exercise_id": "ex6_3",
+    "title": "Custom Python Topology Class",
+    "description": "Write a custom topology using Mininet Python API",
+    "instructions": "1. Create file: nano myCustomTopo.py\\n2. Import: from mininet.topo import Topo\\n3. Create class MyTopo(Topo)\\n4. Add switches and hosts in build() method\\n5. Run: sudo mn --custom myCustomTopo.py --topo mytopo",
+    "expected_output": "Custom topology loads and runs",
+    "hints": [
+      "Use addSwitch(), addHost(), addLink()",
+      "See Mininet API docs"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 6,
+    "exercise_id": "ex6_4",
+    "title": "Linear Topology Script",
+    "description": "Create a linear topology with variable switch count",
+    "instructions": "1. Write Python class for linear topology\\n2. Accept parameter for number of switches\\n3. Create switches s1, s2, ... sN\\n4. Add one host per switch\\n5. Link switches in a line\\n6. Test with different N values",
+    "expected_output": "Parameterized linear topology",
+    "hints": [
+      "Use loop to create N switches",
+      "Link si to si+1"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 6,
+    "exercise_id": "ex6_5",
+    "title": "Tree Topology Implementation",
+    "description": "Build a tree topology with depth and fanout parameters",
+    "instructions": "1. Create tree topology class\\n2. Parameters: depth, fanout\\n3. Implement recursive tree building\\n4. Test with depth=2, fanout=2\\n5. Verify connectivity with pingall",
+    "expected_output": "Binary tree topology",
+    "hints": [
+      "Recursive function for tree building",
+      "Root switch at top level"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 6,
+    "exercise_id": "ex6_6",
+    "title": "Link Parameter Configuration",
+    "description": "Configure link bandwidth and delay",
+    "instructions": "1. Create custom topology\\n2. Add link with parameters: self.addLink(h1, s1, bw=10, delay='5ms')\\n3. Test throughput with iperf\\n4. Verify ~10 Mbps bandwidth\\n5. Check ping latency (~5ms round-trip)",
+    "expected_output": "Links have configured bandwidth and delay",
+    "hints": [
+      "bw in Mbps",
+      "delay with units (ms, us)"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 6,
+    "exercise_id": "ex6_7",
+    "title": "Multi-Controller Topology",
+    "description": "Create topology with multiple controllers",
+    "instructions": "1. Start two RYU controllers on different ports\\n2. Create topology with 2 switches\\n3. Assign each switch to different controller\\n4. Test inter-switch communication",
+    "expected_output": "Each switch connected to separate controller",
+    "hints": [
+      "Use different ports (6633, 6634)",
+      "Switches can have different controllers"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 7,
+    "exercise_id": "ex7_1",
+    "title": "Hub Application Implementation",
+    "description": "Create a simple hub that floods all packets",
+    "instructions": "1. Create hub_app.py\\n2. Import RYU libraries\\n3. Implement packet_in_handler\\n4. Action: FLOOD all packets\\n5. Test: ryu-manager hub_app.py, then sudo mn --controller remote\\n6. Verify all hosts receive broadcast traffic",
+    "expected_output": "All packets flooded to all ports",
+    "hints": [
+      "Use OFPActionOutput(OFPP_FLOOD)",
+      "No learning, always floods"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 7,
+    "exercise_id": "ex7_2",
+    "title": "L2 Learning Switch",
+    "description": "Implement MAC address learning switch",
+    "instructions": "1. Create l2_switch.py\\n2. Maintain mac_to_port dictionary\\n3. Learn source MAC on packet_in\\n4. Install flow if destination MAC is known\\n5. Flood if destination unknown\\n6. Test and verify learning behavior",
+    "expected_output": "Switch learns MACs and stops flooding",
+    "hints": [
+      "Store: mac_to_port[src_mac] = in_port",
+      "Install bidirectional flows"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 7,
+    "exercise_id": "ex7_3",
+    "title": "L3 Simple Router",
+    "description": "Implement basic IP routing",
+    "instructions": "1. Create router_app.py\\n2. Handle ARP separately (flood)\\n3. Match on IP destination\\n4. Forward based on routing table\\n5. Test cross-subnet routing",
+    "expected_output": "IP routing between different subnets",
+    "hints": [
+      "dl_type=0x0800 for IP",
+      "nw_dst for IP matching"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 7,
+    "exercise_id": "ex7_4",
+    "title": "L4 Service Firewall",
+    "description": "Block specific TCP/UDP services",
+    "instructions": "1. Create firewall_app.py\\n2. Define blocked ports (e.g., 80 for HTTP)\\n3. Check tp_dst in packet_in\\n4. Drop if port is blocked\\n5. Allow other traffic\\n6. Test: ICMP works, HTTP blocked",
+    "expected_output": "Selective service blocking",
+    "hints": [
+      "Match: nw_proto=6 (TCP), tp_dst=80",
+      "Action: drop for blocked"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 7,
+    "exercise_id": "ex7_5",
+    "title": "VLAN-like Network Isolation",
+    "description": "Implement network segmentation",
+    "instructions": "1. Create isolation_app.py\\n2. Define groups: h1,h2 in group A; h3,h4 in group B\\n3. Allow intra-group traffic\\n4. Block inter-group traffic\\n5. Test: h1 can ping h2, but not h3",
+    "expected_output": "Isolated network segments",
+    "hints": [
+      "Map ports to groups",
+      "Check group membership before forwarding"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 7,
+    "exercise_id": "ex7_6",
+    "title": "Proactive Firewall Rules",
+    "description": "Pre-install firewall rules proactively",
+    "instructions": "1. Create proactive_firewall.py\\n2. Install all firewall rules at startup\\n3. Don't use packet_in for firewall decisions\\n4. Test immediate enforcement\\n5. Compare with reactive approach",
+    "expected_output": "Rules active before any traffic",
+    "hints": [
+      "Install flows in switch_features_handler",
+      "No controller involvement for blocked traffic"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 7,
+    "exercise_id": "ex7_7",
+    "title": "Controller Application Debugging",
+    "description": "Debug RYU applications effectively",
+    "instructions": "1. Add logging to your app\\n2. Use self.logger.info(), .debug(), .error()\\n3. Run with --verbose flag\\n4. Intentionally create a bug\\n5. Use logs to identify and fix it",
+    "expected_output": "Effective debugging workflow",
+    "hints": [
+      "Import logging",
+      "Use appropriate log levels"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 8,
+    "exercise_id": "ex8_1",
+    "title": "Round-Robin Load Balancer",
+    "description": "Distribute traffic across multiple backend servers",
+    "instructions": "1. Create loadbalancer_app.py\\n2. Define backend server pool\\n3. Implement round-robin selection\\n4. Rewrite destination IP/MAC to selected backend\\n5. Install bidirectional flows\\n6. Test with multiple clients",
+    "expected_output": "Even distribution across backends",
+    "hints": [
+      "Track next_backend_index",
+      "Rotate through server list"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 8,
+    "exercise_id": "ex8_2",
+    "title": "Multi-Field Advanced Firewall",
+    "description": "Implement complex firewall with multiple criteria",
+    "instructions": "1. Create advanced_firewall.py\\n2. Rule 1: Block external subnet to DB port 3306\\n3. Rule 2: Allow HTTP/HTTPS from specific sources\\n4. Rule 3: Rate-limit SSH connections\\n5. Test each rule individually\\n6. Document rule priority and conflicts",
+    "expected_output": "Sophisticated access control",
+    "hints": [
+      "Combine nw_src, nw_dst, tp_dst",
+      "Use priorities carefully"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 8,
+    "exercise_id": "ex8_3",
+    "title": "Network Telemetry Collection",
+    "description": "Build monitoring system with statistics collection",
+    "instructions": "1. Create monitor_app.py\\n2. Periodically request flow stats\\n3. Periodically request port stats\\n4. Store in data structure or export to file\\n5. Generate reports: top talkers, throughput per flow",
+    "expected_output": "Continuous monitoring and reporting",
+    "hints": [
+      "Use set_ev_cls for stats reply events",
+      "Export to CSV or JSON"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 8,
+    "exercise_id": "ex8_4",
+    "title": "Simple Intrusion Detection System",
+    "description": "Detect suspicious traffic patterns",
+    "instructions": "1. Create ids_app.py\\n2. Detect: Multiple connection attempts to different ports (port scan)\\n3. Detect: High packet rate from single source\\n4. Alert when threshold exceeded\\n5. Optionally install blocking flow\\n6. Test with nmap or hping3",
+    "expected_output": "Attack detection and alerting",
+    "hints": [
+      "Track connection attempts per source",
+      "Set thresholds for alerts"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 8,
+    "exercise_id": "ex8_5",
+    "title": "DDoS Mitigation System",
+    "description": "Rate-limit or block flooding sources",
+    "instructions": "1. Create ddos_mitigation.py\\n2. Track packet rate per source IP\\n3. If rate > threshold, install drop flow\\n4. Simulate attack: h1 hping3 --flood h2\\n5. Verify attacker blocked, victim protected\\n6. Measure victim throughput before/during/after",
+    "expected_output": "Automatic mitigation of flood attacks",
+    "hints": [
+      "Calculate packets per second",
+      "Dynamic flow installation for blocking"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 8,
+    "exercise_id": "ex8_6",
+    "title": "Stateful Firewall Implementation",
+    "description": "Track connection state for bidirectional traffic",
+    "instructions": "1. Create stateful_firewall.py\\n2. Track established TCP connections\\n3. Allow return traffic for established connections\\n4. Block unsolicited inbound connections\\n5. Test client-initiated connections (allowed)\\n6. Test server-initiated connections (blocked)",
+    "expected_output": "Stateful connection tracking",
+    "hints": [
+      "Track (src_ip, dst_ip, src_port, dst_port) tuples",
+      "Check TCP flags"
+    ],
+    "difficulty": "advanced"
+  },
+  {
+    "section_id": 8,
+    "exercise_id": "ex8_7",
+    "title": "Security Project Documentation",
+    "description": "Create comprehensive project report",
+    "instructions": "1. Choose a security application (firewall, IDS, or load balancer)\\n2. Document: Architecture, algorithm, code structure\\n3. Create test plan and execute tests\\n4. Measure performance metrics\\n5. Analyze false positives/negatives\\n6. Write complete report with diagrams",
+    "expected_output": "Professional security project documentation",
+    "hints": [
+      "Include network diagrams",
+      "Show before/after metrics",
+      "Document edge cases"
+    ],
+    "difficulty": "advanced"
+  }
+]

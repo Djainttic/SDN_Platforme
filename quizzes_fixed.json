@@ -1,0 +1,422 @@
+[
+  {
+    "section_id": 0,
+    "question": "In a dual-VM setup, which networking mode provides the best isolation while allowing VM-to-VM communication?",
+    "options": [
+      "NAT",
+      "Bridged",
+      "Host-Only",
+      "Internal Network"
+    ],
+    "correct_answer": "Host-Only",
+    "explanation": "Host-Only networking creates an isolated network between VMs and the host, perfect for SDN lab setups without external network access.",
+    "difficulty": "medium",
+    "points": 2
+  },
+  {
+    "section_id": 0,
+    "question": "What command should you run if Mininet fails to start due to residual state from a previous session?",
+    "options": [
+      "sudo mn --reset",
+      "sudo mn -c",
+      "sudo mn --clean",
+      "sudo killall mn"
+    ],
+    "correct_answer": "sudo mn -c",
+    "explanation": "The 'sudo mn -c' command cleans up residual Mininet state including switches, links, and processes.",
+    "difficulty": "easy",
+    "points": 1
+  },
+  {
+    "section_id": 0,
+    "question": "When verifying controller-switch connection, what field in 'ovs-vsctl show' output indicates successful connection?",
+    "options": [
+      "controller_status: active",
+      "is_connected: true",
+      "state: connected",
+      "status: online"
+    ],
+    "correct_answer": "is_connected: true",
+    "explanation": "The 'is_connected: true' field indicates the switch has successfully established an OpenFlow connection to the controller.",
+    "difficulty": "easy",
+    "points": 1
+  },
+  {
+    "section_id": 0,
+    "question": "Which component must be started FIRST in a typical SDN setup?",
+    "options": [
+      "Mininet",
+      "Open vSwitch",
+      "RYU Controller",
+      "Wireshark"
+    ],
+    "correct_answer": "RYU Controller",
+    "explanation": "The controller must be running and listening before switches attempt to connect, otherwise connection will fail or timeout.",
+    "difficulty": "easy",
+    "points": 1
+  },
+  {
+    "section_id": 0,
+    "question": "What is the significance of the IP address 127.0.0.1 in a single-VM SDN setup?",
+    "options": [
+      "It's the switch management IP",
+      "It's the loopback interface for localhost communication",
+      "It's the default gateway",
+      "It's the DHCP server address"
+    ],
+    "correct_answer": "It's the loopback interface for localhost communication",
+    "explanation": "127.0.0.1 is the loopback address allowing the controller and switch to communicate on the same machine.",
+    "difficulty": "easy",
+    "points": 1
+  },
+  {
+    "section_id": 0,
+    "question": "In a two-VM setup, what is the most common cause of controller-switch connection failure?",
+    "options": [
+      "Incorrect OpenFlow version",
+      "VMs not on the same subnet",
+      "Insufficient RAM",
+      "Wrong switch type"
+    ],
+    "correct_answer": "VMs not on the same subnet",
+    "explanation": "For VMs to communicate, they must be on the same subnet with properly configured static IPs and routing.",
+    "difficulty": "medium",
+    "points": 2
+  },
+  {
+    "section_id": 0,
+    "question": "What does the command 'ovs-ofctl dump-flows s1' display?",
+    "options": [
+      "Switch hardware specifications",
+      "Active OpenFlow flow rules",
+      "Port statistics",
+      "Controller logs"
+    ],
+    "correct_answer": "Active OpenFlow flow rules",
+    "explanation": "dump-flows shows all flow table entries including match fields, actions, priorities, and statistics.",
+    "difficulty": "easy",
+    "points": 1
+  },
+  {
+    "section_id": 0,
+    "question": "If 'pingall' succeeds but with packet loss on first run, what is the likely cause?",
+    "options": [
+      "Faulty network card",
+      "Reactive flow installation delay",
+      "Insufficient bandwidth",
+      "Controller malfunction"
+    ],
+    "correct_answer": "Reactive flow installation delay",
+    "explanation": "First packets trigger flow installation (packet-in to controller), causing initial delay. Subsequent packets hit installed flows.",
+    "difficulty": "medium",
+    "points": 2
+  },
+  {
+    "section_id": 0,
+    "question": "Which file contains persistent OVS database configuration?",
+    "options": [
+      "/etc/openvswitch/conf.db",
+      "/var/lib/openvswitch/ovs-vswitchd.conf",
+      "/etc/ovs/config.db",
+      "/var/run/openvswitch/db.sock"
+    ],
+    "correct_answer": "/etc/openvswitch/conf.db",
+    "explanation": "The conf.db file stores persistent OVS configuration including bridges and controller settings.",
+    "difficulty": "hard",
+    "points": 3
+  },
+  {
+    "section_id": 0,
+    "question": "What is the purpose of the '--topo single,4' parameter in Mininet?",
+    "options": [
+      "Create 4 separate networks",
+      "Create 1 switch with 4 hosts",
+      "Create 4 switches in a line",
+      "Create 4-level tree topology"
+    ],
+    "correct_answer": "Create 1 switch with 4 hosts",
+    "explanation": "single,N creates a star topology with one switch and N hosts connected to it.",
+    "difficulty": "easy",
+    "points": 1
+  },
+  {
+    "section_id": 1,
+    "question": "What is the key difference between Mininet emulation and network simulation?",
+    "options": [
+      "Emulation is faster",
+      "Emulation uses real Linux network stack",
+      "Simulation is more accurate",
+      "Simulation requires less memory"
+    ],
+    "correct_answer": "Emulation uses real Linux network stack",
+    "explanation": "Mininet emulates networks using real kernel networking, providing high-fidelity behavior unlike abstract simulation models.",
+    "difficulty": "medium",
+    "points": 2
+  },
+  {
+    "section_id": 1,
+    "question": "Which Mininet command shows all nodes in the current topology?",
+    "options": [
+      "list",
+      "nodes",
+      "show",
+      "dump"
+    ],
+    "correct_answer": "nodes",
+    "explanation": "The 'nodes' command lists all hosts, switches, and controllers in the topology.",
+    "difficulty": "easy",
+    "points": 1
+  },
+  {
+    "section_id": 1,
+    "question": "What does the 'net' command display in Mininet CLI?",
+    "options": [
+      "Network statistics",
+      "Links and connections between nodes",
+      "IP addresses",
+      "Flow tables"
+    ],
+    "correct_answer": "Links and connections between nodes",
+    "explanation": "'net' shows the network topology with all links and their endpoints.",
+    "difficulty": "easy",
+    "points": 1
+  },
+  {
+    "section_id": 1,
+    "question": "To run a command on host h1 in Mininet, what is the correct syntax?",
+    "options": [
+      "h1.run('command')",
+      "h1 command",
+      "exec h1 command",
+      "run h1 command"
+    ],
+    "correct_answer": "h1 command",
+    "explanation": "Mininet CLI uses simple syntax: <host> <command> to execute commands in that host's namespace.",
+    "difficulty": "easy",
+    "points": 1
+  },
+  {
+    "section_id": 1,
+    "question": "What tool does Mininet use internally to create network namespaces?",
+    "options": [
+      "Docker",
+      "LXC",
+      "Linux network namespaces",
+      "VirtualBox"
+    ],
+    "correct_answer": "Linux network namespaces",
+    "explanation": "Mininet leverages Linux network namespaces to create isolated network environments for each host.",
+    "difficulty": "medium",
+    "points": 2
+  },
+  {
+    "section_id": 1,
+    "question": "If 'link s1 h1 down' is executed, what happens?",
+    "options": [
+      "h1 is removed from topology",
+      "Connection between s1 and h1 is disabled",
+      "s1 stops functioning",
+      "All traffic is blocked"
+    ],
+    "correct_answer": "Connection between s1 and h1 is disabled",
+    "explanation": "The link command dynamically enables/disables links, simulating link failures.",
+    "difficulty": "easy",
+    "points": 1
+  },
+  {
+    "section_id": 1,
+    "question": "What is the purpose of 'iperf' in Mininet?",
+    "options": [
+      "Measure latency",
+      "Measure TCP/UDP throughput",
+      "Capture packets",
+      "Install flows"
+    ],
+    "correct_answer": "Measure TCP/UDP throughput",
+    "explanation": "iperf measures network bandwidth/throughput between two hosts.",
+    "difficulty": "easy",
+    "points": 1
+  },
+  {
+    "section_id": 1,
+    "question": "Which topology type creates a tree structure with configurable depth and fanout?",
+    "options": [
+      "linear",
+      "tree",
+      "single",
+      "minimal"
+    ],
+    "correct_answer": "tree",
+    "explanation": "The tree topology creates hierarchical structures with specified depth and branching factor.",
+    "difficulty": "medium",
+    "points": 2
+  },
+  {
+    "section_id": 1,
+    "question": "What does 'dump' command show in Mininet CLI?",
+    "options": [
+      "Flow tables",
+      "Detailed information about all nodes",
+      "Packet capture",
+      "Error logs"
+    ],
+    "correct_answer": "Detailed information about all nodes",
+    "explanation": "'dump' displays detailed info including PIDs, interfaces, and ports for all nodes.",
+    "difficulty": "easy",
+    "points": 1
+  },
+  {
+    "section_id": 1,
+    "question": "To create a custom topology with 5 switches in a line, which command is used?",
+    "options": [
+      "sudo mn --topo single,5",
+      "sudo mn --topo linear,5",
+      "sudo mn --topo tree,5",
+      "sudo mn --topo chain,5"
+    ],
+    "correct_answer": "sudo mn --topo linear,5",
+    "explanation": "linear,N creates N switches connected in a line, each with one host.",
+    "difficulty": "easy",
+    "points": 1
+  },
+  {
+    "section_id": 2,
+    "question": "What is the southbound API protocol used between RYU controller and switches?",
+    "options": [
+      "REST API",
+      "OpenFlow",
+      "NETCONF",
+      "gRPC"
+    ],
+    "correct_answer": "OpenFlow",
+    "explanation": "OpenFlow is the standardized protocol for southbound communication between SDN controllers and switches.",
+    "difficulty": "easy",
+    "points": 1
+  },
+  {
+    "section_id": 2,
+    "question": "Which RYU event handler processes packets sent from switch to controller?",
+    "options": [
+      "EventOFPSwitchFeatures",
+      "EventOFPPacketIn",
+      "EventOFPFlowMod",
+      "EventOFPStateChange"
+    ],
+    "correct_answer": "EventOFPPacketIn",
+    "explanation": "EventOFPPacketIn is triggered when a switch sends a packet to the controller (unknown destination or explicit CONTROLLER action).",
+    "difficulty": "medium",
+    "points": 2
+  },
+  {
+    "section_id": 2,
+    "question": "In the OpenFlow handshake sequence, which message does the controller send first?",
+    "options": [
+      "FEATURES_REQUEST",
+      "HELLO",
+      "SET_CONFIG",
+      "FLOW_MOD"
+    ],
+    "correct_answer": "HELLO",
+    "explanation": "HELLO messages are exchanged first to negotiate OpenFlow version between controller and switch.",
+    "difficulty": "medium",
+    "points": 2
+  },
+  {
+    "section_id": 2,
+    "question": "What does FEATURES_REPLY message contain?",
+    "options": [
+      "Flow statistics",
+      "Switch capabilities and ports",
+      "Controller configuration",
+      "Network topology"
+    ],
+    "correct_answer": "Switch capabilities and ports",
+    "explanation": "FEATURES_REPLY provides switch datapath ID, port information, and supported capabilities.",
+    "difficulty": "medium",
+    "points": 2
+  },
+  {
+    "section_id": 2,
+    "question": "Which decorator is used in RYU to register event handlers?",
+    "options": [
+      "@event_handler",
+      "@set_ev_cls",
+      "@ryu_event",
+      "@of_handler"
+    ],
+    "correct_answer": "@set_ev_cls",
+    "explanation": "@set_ev_cls(event_class, state) decorator registers methods as OpenFlow event handlers.",
+    "difficulty": "medium",
+    "points": 2
+  },
+  {
+    "section_id": 2,
+    "question": "What is the purpose of the datapath object in RYU?",
+    "options": [
+      "Store flow tables",
+      "Represent switch connection",
+      "Handle HTTP requests",
+      "Manage topology"
+    ],
+    "correct_answer": "Represent switch connection",
+    "explanation": "Datapath represents a switch connection, providing methods to send OpenFlow messages.",
+    "difficulty": "medium",
+    "points": 2
+  },
+  {
+    "section_id": 2,
+    "question": "How does RYU simple_switch_13 handle unknown destination MAC addresses?",
+    "options": [
+      "Drop the packet",
+      "Send PACKET_OUT with FLOOD action",
+      "Install default flow",
+      "Broadcast to all controllers"
+    ],
+    "correct_answer": "Send PACKET_OUT with FLOOD action",
+    "explanation": "Unknown destinations are flooded to all ports to discover the destination host.",
+    "difficulty": "medium",
+    "points": 2
+  },
+  {
+    "section_id": 2,
+    "question": "What is the default OpenFlow version used by RYU simple_switch_13?",
+    "options": [
+      "OpenFlow 1.0",
+      "OpenFlow 1.2",
+      "OpenFlow 1.3",
+      "OpenFlow 1.5"
+    ],
+    "correct_answer": "OpenFlow 1.3",
+    "explanation": "The '13' in simple_switch_13 indicates OpenFlow version 1.3.",
+    "difficulty": "easy",
+    "points": 1
+  },
+  {
+    "section_id": 2,
+    "question": "Which command verifies that RYU controller is running and listening?",
+    "options": [
+      "ovs-vsctl show",
+      "netstat -tulpn | grep 6653",
+      "ryu-manager --status",
+      "ofctl check"
+    ],
+    "correct_answer": "netstat -tulpn | grep 6653",
+    "explanation": "netstat shows listening ports; RYU typically listens on port 6653 (OpenFlow 1.3).",
+    "difficulty": "medium",
+    "points": 2
+  },
+  {
+    "section_id": 2,
+    "question": "What happens if the controller crashes while switches are running?",
+    "options": [
+      "All traffic stops immediately",
+      "Switches revert to L2 learning mode",
+      "Existing flows continue to work",
+      "Switches shut down"
+    ],
+    "correct_answer": "Existing flows continue to work",
+    "explanation": "Installed flows remain in switch flow tables and continue forwarding; only new flows cannot be installed.",
+    "difficulty": "medium",
+    "points": 2
+  }
+]

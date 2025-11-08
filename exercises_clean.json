@@ -1,0 +1,291 @@
+[
+  {
+    "section_id": 0,
+    "exercise_id": "ex0_1",
+    "title": "Verify SDN Tool Installation",
+    "description": "Confirm that all required SDN tools are properly installed and functional",
+    "instructions": "1. Open a terminal\\n2. Run 'sudo mn --version' to check Mininet\\n3. Run 'ryu-manager --version' to check RYU\\n4. Run 'ovs-vsctl --version' to check Open vSwitch\\n5. Document the version numbers",
+    "expected_output": "Mininet 2.3.0+\\nRYU 4.34+\\nOVS 2.13.0+",
+    "hints": [
+      "Ensure you have sudo privileges",
+      "If tools are missing, install via apt or pip"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 0,
+    "exercise_id": "ex0_2",
+    "title": "Single-VM Controller Connection",
+    "description": "Set up and verify a working SDN environment with controller and switch on the same machine",
+    "instructions": "1. Terminal 1: Start RYU controller with 'ryu-manager ryu.app.simple_switch_13'\\n2. Terminal 2: Start Mininet with 'sudo mn --controller=remote,ip=127.0.0.1 --topo single,4'\\n3. In Mininet CLI, run 'ovs-vsctl show'\\n4. Verify controller connection shows 'is_connected: true'\\n5. Run 'pingall' to test connectivity",
+    "expected_output": "Controller connected, 0% packet loss on pingall",
+    "hints": [
+      "Start controller first, then Mininet",
+      "Check port 6633 or 6653",
+      "Use sudo mn -c to clean up previous sessions"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 0,
+    "exercise_id": "ex0_3",
+    "title": "Dual-VM Setup Configuration",
+    "description": "Configure two virtual machines for external controller testing",
+    "instructions": "1. VM1 (Controller): Configure static IP (e.g., 192.168.1.50)\\n2. VM2 (Mininet): Configure static IP on same subnet (e.g., 192.168.1.51)\\n3. Test connectivity: ping from VM2 to VM1\\n4. Start RYU on VM1\\n5. Start Mininet on VM2 pointing to VM1: sudo mn --controller=remote,ip=192.168.1.50\\n6. Verify connection with ovs-vsctl show",
+    "expected_output": "VMs ping successfully, controller connection established",
+    "hints": [
+      "Use Host-Only or Bridged networking",
+      "Check firewall settings",
+      "Ensure both VMs are on same subnet"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 0,
+    "exercise_id": "ex0_4",
+    "title": "Environment Troubleshooting",
+    "description": "Practice diagnosing and fixing common SDN environment issues",
+    "instructions": "1. Intentionally start Mininet BEFORE controller\\n2. Observe the error or timeout\\n3. Use 'sudo mn -c' to clean up\\n4. Start controller first, then Mininet\\n5. Document the difference in behavior",
+    "expected_output": "Understanding of startup order importance",
+    "hints": [
+      "Controller must be running before Mininet starts",
+      "Check logs for connection errors"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 0,
+    "exercise_id": "ex0_5",
+    "title": "Flow Table Inspection After Setup",
+    "description": "Examine the initial flow table state after environment setup",
+    "instructions": "1. Set up Single-VM environment\\n2. After pingall, run 'ovs-ofctl dump-flows s1'\\n3. Identify the default flow entries\\n4. Note the priority values\\n5. Count how many flows were installed",
+    "expected_output": "Multiple flows with various priorities, CONTROLLER action visible",
+    "hints": [
+      "Look for priority=0 (default/miss entry)",
+      "Check for learned MAC address flows"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 0,
+    "exercise_id": "ex0_6",
+    "title": "Network Cleanup and Reset",
+    "description": "Learn to properly clean up SDN environments",
+    "instructions": "1. After running Mininet, exit the CLI\\n2. Run 'sudo mn -c' to clean up\\n3. Verify cleanup with 'sudo ovs-vsctl show'\\n4. Check for leftover processes with 'ps aux | grep mininet'\\n5. Document the cleanup procedure",
+    "expected_output": "Clean system with no residual Mininet processes or bridges",
+    "hints": [
+      "Always clean up between sessions",
+      "Use 'sudo killall' if processes persist"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 0,
+    "exercise_id": "ex0_7",
+    "title": "Port Configuration Verification",
+    "description": "Verify OpenFlow port configuration between controller and switch",
+    "instructions": "1. Start RYU with default settings\\n2. Check which port RYU is listening on (usually 6653)\\n3. Start Mininet with matching port\\n4. If using non-standard port, specify it: --controller=remote,ip=127.0.0.1,port=6633\\n5. Verify connection",
+    "expected_output": "Controller listening and switch connected on correct port",
+    "hints": [
+      "OpenFlow 1.3 uses port 6653 by default",
+      "Legacy port is 6633"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 1,
+    "exercise_id": "ex1_1",
+    "title": "Exploring Mininet Topologies",
+    "description": "Create and explore different pre-built Mininet topologies",
+    "instructions": "1. Start Mininet with 'sudo mn --topo minimal'\\n2. Run 'nodes' command and document the output\\n3. Run 'net' command to see network links\\n4. Exit and try 'sudo mn --topo linear,4'\\n5. Compare the topology structures",
+    "expected_output": "Understanding of minimal vs linear topologies",
+    "hints": [
+      "Minimal = 2 hosts, 1 switch",
+      "Linear,n = n switches in a line with n hosts"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 1,
+    "exercise_id": "ex1_2",
+    "title": "Host Command Execution",
+    "description": "Practice executing commands on virtual hosts",
+    "instructions": "1. Start Mininet: sudo mn\\n2. Run 'h1 ifconfig' to see h1's network interface\\n3. Run 'h1 ip addr' for detailed address info\\n4. Run 'h1 route' to see routing table\\n5. Compare with h2's configuration",
+    "expected_output": "Each host has unique IP in 10.0.0.0/8 subnet",
+    "hints": [
+      "Format: <host> <command>",
+      "Each host is in its own network namespace"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 1,
+    "exercise_id": "ex1_3",
+    "title": "Connectivity Testing with pingall",
+    "description": "Use pingall to test network-wide connectivity",
+    "instructions": "1. Start Mininet: sudo mn --topo single,5\\n2. Run 'pingall' immediately and note results\\n3. Run 'pingall' again and observe differences\\n4. Explain why the second pingall might be different",
+    "expected_output": "First pingall may have drops, second should be 0% loss",
+    "hints": [
+      "Reactive flow installation causes first-packet delay",
+      "ARP learning occurs during first pingall"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 1,
+    "exercise_id": "ex1_4",
+    "title": "Link Manipulation",
+    "description": "Dynamically change network topology by manipulating links",
+    "instructions": "1. sudo mn --topo linear,3\\n2. Run pingall (should succeed)\\n3. Run 'link s1 s2 down'\\n4. Run pingall again and observe results\\n5. Run 'link s1 s2 up' and test again",
+    "expected_output": "Connectivity breaks when link is down, restores when up",
+    "hints": [
+      "Link format: link <node1> <node2> up/down",
+      "Observe which hosts can still communicate"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 1,
+    "exercise_id": "ex1_5",
+    "title": "iperf Performance Testing",
+    "description": "Measure network throughput using iperf",
+    "instructions": "1. Start Mininet: sudo mn\\n2. Run 'iperf h1 h2' to test TCP throughput\\n3. Note the bandwidth result\\n4. Run multiple times and check consistency\\n5. Document baseline performance",
+    "expected_output": "Throughput in Gbps range for virtual environment",
+    "hints": [
+      "First run may be slower",
+      "Virtual links typically show very high throughput"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 1,
+    "exercise_id": "ex1_6",
+    "title": "Custom Mininet Commands",
+    "description": "Create a custom command sequence for network testing",
+    "instructions": "1. Start Mininet\\n2. Create a test sequence: nodes \u2192 net \u2192 dump \u2192 pingall \u2192 iperf h1 h2\\n3. Document each output\\n4. Explain what information each command provides\\n5. Save as a testing checklist",
+    "expected_output": "Complete network characterization checklist",
+    "hints": [
+      "nodes = list of nodes",
+      "net = network topology",
+      "dump = detailed node info"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 1,
+    "exercise_id": "ex1_7",
+    "title": "Mininet Cleanup Best Practices",
+    "description": "Learn proper Mininet cleanup procedures",
+    "instructions": "1. Start and exit Mininet multiple times\\n2. Check for leftover bridges: sudo ovs-vsctl show\\n3. Practice cleanup: sudo mn -c\\n4. Verify all switches are removed\\n5. Check for zombie processes: ps aux | grep mininet",
+    "expected_output": "Clean system ready for next session",
+    "hints": [
+      "Always clean between sessions",
+      "Verify no bridges or processes remain"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 2,
+    "exercise_id": "ex2_1",
+    "title": "RYU Controller Startup",
+    "description": "Launch RYU controller with different applications",
+    "instructions": "1. Try: ryu-manager ryu.app.simple_switch_13\\n2. Observe startup messages\\n3. Note the listening port\\n4. Try alternative app: ryu-manager ryu.app.gui_topology.gui_topology\\n5. Document differences",
+    "expected_output": "Controller starts successfully, shows application loaded",
+    "hints": [
+      "Check for 'loading app' messages",
+      "Note the OpenFlow version"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 2,
+    "exercise_id": "ex2_2",
+    "title": "Controller-Switch Handshake",
+    "description": "Observe and verify the OpenFlow handshake process",
+    "instructions": "1. Start RYU controller\\n2. Watch controller terminal output\\n3. In another terminal, start Mininet\\n4. Observe handshake messages (HELLO, FEATURES_REQUEST, etc.)\\n5. Verify switch connects successfully",
+    "expected_output": "Successful OpenFlow handshake visible in logs",
+    "hints": [
+      "Look for 'connected socket' messages",
+      "FEATURES_REQUEST shows switch capabilities"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 2,
+    "exercise_id": "ex2_3",
+    "title": "Verify Controller Connection",
+    "description": "Confirm controller-switch connection using OVS commands",
+    "instructions": "1. Setup: RYU + Mininet on localhost\\n2. In Mininet CLI: ovs-vsctl show\\n3. Find the Controller section\\n4. Verify 'is_connected: true'\\n5. Note the controller IP and port",
+    "expected_output": "Controller tcp:127.0.0.1:6653 is_connected: true",
+    "hints": [
+      "Look for Controller section in ovs-vsctl output",
+      "Connection status should be true"
+    ],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 2,
+    "exercise_id": "ex2_4",
+    "title": "Reactive Flow Installation Observation",
+    "description": "Watch the RYU controller install flows reactively",
+    "instructions": "1. Start RYU with simple_switch_13\\n2. Start Mininet\\n3. Run 'ovs-ofctl dump-flows s1' (should be empty or minimal)\\n4. Run 'h1 ping -c 1 h2'\\n5. Run dump-flows again and observe new flows\\n6. Document what flows were added",
+    "expected_output": "New MAC learning flows appear after ping",
+    "hints": [
+      "Reactive = flows installed on-demand",
+      "Look for dl_dst (MAC) match fields"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 2,
+    "exercise_id": "ex2_5",
+    "title": "Packet-In Event Monitoring",
+    "description": "Monitor packet-in events in the RYU controller logs",
+    "instructions": "1. Start RYU controller (watch terminal output)\\n2. Start Mininet\\n3. Generate traffic: pingall\\n4. Observe 'EventOFPPacketIn' messages in RYU terminal\\n5. Count how many packet-in events occur\\n6. Explain why these events happen",
+    "expected_output": "Multiple EventOFPPacketIn messages during first pingall",
+    "hints": [
+      "Packet-in = unknown packet sent to controller",
+      "Decreases as flows are learned"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 2,
+    "exercise_id": "ex2_6",
+    "title": "Multiple Switch Management",
+    "description": "Connect multiple switches to a single RYU controller",
+    "instructions": "1. Start RYU controller\\n2. Start Mininet with linear topology: sudo mn --topo linear,3 --controller remote\\n3. Run 'ovs-vsctl show' to see all switches\\n4. Verify all switches connect to same controller\\n5. Test inter-switch communication with pingall",
+    "expected_output": "All 3 switches connected to single controller, full connectivity",
+    "hints": [
+      "Each switch will have separate connection",
+      "Controller handles multiple switches simultaneously"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 2,
+    "exercise_id": "ex2_7",
+    "title": "Controller Log Analysis",
+    "description": "Analyze RYU controller logs for debugging",
+    "instructions": "1. Start RYU with verbose logging\\n2. Start Mininet and generate traffic\\n3. Review controller logs for:\\n   - Connection events\\n   - Packet-in events\\n   - Flow-mod installations\\n4. Document the event sequence\\n5. Identify any errors or warnings",
+    "expected_output": "Complete event timeline from connection to flow installation",
+    "hints": [
+      "Use --verbose flag for detailed logging",
+      "Look for event timestamps"
+    ],
+    "difficulty": "intermediate"
+  },
+  {
+    "section_id": 3,
+    "exercise_id": "ex3_1",
+    "title": "Manual Flow Installation - Drop All",
+    "description": "Create a flow rule that drops all traffic",
+    "instructions": "1. Start Mininet: sudo mn --controller=none\\n2. Add drop rule: sudo ovs-ofctl add-flow s1 'actions=drop'\\n3. Test: pingall (should fail completely)\\n4. View flows: sudo ovs-ofctl dump-flows s1\\n5. Delete flows: sudo ovs-ofctl del-flows s1",
+    "expected_output": "100% packet loss, flow visible with actions=drop",
+    "hints": [
+      "--controller=none prevents automatic flow installation",
+      "Default priority is 32768"
+    ],
+    "difficulty": "beginner"
+  }
+]

@@ -1,0 +1,63 @@
+\nLoaded 22 exercises
+Loaded 1 quiz questions\n
+=== Inserting Exercises ===
+Status: 200
+Response: {
+  "success": true,
+  "message": "Successfully processed 22 exercises",
+  "count": 22,
+  "inserted": 22
+}
+\n=== Inserting Quiz Questions ===
+Status: 200
+Response: {
+  "success": true,
+  "message": "Successfully inserted 1 quiz questions",
+  "count": 1,
+  "inserted": 1
+}
+\n=== Verification ===
+Final Stats:\n{
+  "success": true,
+  "total_exercises": 22,
+  "total_quizzes": 2,
+  "by_section": {
+    "0": {
+      "exercises": 7,
+      "quizzes": 0
+    },
+    "1": {
+      "exercises": 7,
+      "quizzes": 0
+    },
+    "2": {
+      "exercises": 7,
+      "quizzes": 0
+    },
+    "3": {
+      "exercises": 1,
+      "quizzes": 2
+    },
+    "4": {
+      "exercises": 0,
+      "quizzes": 0
+    },
+    "5": {
+      "exercises": 0,
+      "quizzes": 0
+    },
+    "6": {
+      "exercises": 0,
+      "quizzes": 0
+    },
+    "7": {
+      "exercises": 0,
+      "quizzes": 0
+    },
+    "8": {
+      "exercises": 0,
+      "quizzes": 0
+    }
+  }
+}
+\nResults saved to /workspace/populate_results.txt

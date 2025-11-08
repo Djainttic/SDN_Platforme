@@ -1,0 +1,49 @@
+NEW Exercises loaded: 42
+NEW Quizzes loaded: 60
+Exercises inserted: 42
+Quizzes inserted: 60
+
+Final statistics:
+{
+  "success": true,
+  "total_exercises": 63,
+  "total_quizzes": 62,
+  "by_section": {
+    "0": {
+      "exercises": 7,
+      "quizzes": 0
+    },
+    "1": {
+      "exercises": 7,
+      "quizzes": 0
+    },
+    "2": {
+      "exercises": 7,
+      "quizzes": 0
+    },
+    "3": {
+      "exercises": 7,
+      "quizzes": 12
+    },
+    "4": {
+      "exercises": 7,
+      "quizzes": 10
+    },
+    "5": {
+      "exercises": 7,
+      "quizzes": 10
+    },
+    "6": {
+      "exercises": 7,
+      "quizzes": 10
+    },
+    "7": {
+      "exercises": 7,
+      "quizzes": 10
+    },
+    "8": {
+      "exercises": 7,
+      "quizzes": 10
+    }
+  }
+}

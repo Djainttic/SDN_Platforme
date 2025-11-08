@@ -1,0 +1,478 @@
+# Kubernetes Deployment Configuration for SDN Lab Platform
+# Production-ready configuration with auto-scaling and high availability
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sdn-lab
+
+---
+# ConfigMap for environment variables
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sdn-lab-config
+  namespace: sdn-lab
+data:
+  SUPABASE_URL: "https://zwtjirdodmupjsissjzr.supabase.co"
+  NODE_ENV: "production"
+  MAX_CONCURRENT_CONTAINERS: "100"
+  CONTAINER_TIMEOUT: "3600"
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+
+---
+# Secret for sensitive data
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sdn-lab-secrets
+  namespace: sdn-lab
+type: Opaque
+stringData:
+  SUPABASE_SERVICE_ROLE_KEY: "your-service-role-key-here"
+  SUPABASE_ANON_KEY: "your-anon-key-here"
+
+---
+# Frontend Deployment (React Application)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sdn-frontend
+  namespace: sdn-lab
+  labels:
+    app: sdn-frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sdn-frontend
+  template:
+    metadata:
+      labels:
+        app: sdn-frontend
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: frontend-files
+          mountPath: /usr/share/nginx/html
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: frontend-files
+        persistentVolumeClaim:
+          claimName: frontend-pvc
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+
+---
+# Frontend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: sdn-frontend-service
+  namespace: sdn-lab
+spec:
+  selector:
+    app: sdn-frontend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+
+---
+# Redis Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: sdn-lab
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        ports:
+        - containerPort: 6379
+        command:
+        - redis-server
+        - --appendonly
+        - "yes"
+        - --maxmemory
+        - "2gb"
+        - --maxmemory-policy
+        - allkeys-lru
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "500m"
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        livenessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: redis-pvc
+
+---
+# Redis Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: sdn-lab
+spec:
+  selector:
+    app: redis
+  ports:
+  - protocol: TCP
+    port: 6379
+    targetPort: 6379
+  type: ClusterIP
+
+---
+# Mininet Container DaemonSet (runs on each node for local execution)
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sdn-mininet
+  namespace: sdn-lab
+  labels:
+    app: sdn-mininet
+spec:
+  selector:
+    matchLabels:
+      app: sdn-mininet
+  template:
+    metadata:
+      labels:
+        app: sdn-mininet
+        sdn-lab/pool: mininet
+    spec:
+      hostNetwork: true
+      hostPID: true
+      containers:
+      - name: mininet
+        image: sdn-mininet:latest
+        imagePullPolicy: Always
+        command: ["sleep", "infinity"]
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"
+        volumeMounts:
+        - name: docker-socket
+          mountPath: /var/run/docker.sock
+      volumes:
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock
+          type: Socket
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+
+---
+# RYU Controller Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sdn-ryu
+  namespace: sdn-lab
+  labels:
+    app: sdn-ryu
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: sdn-ryu
+  template:
+    metadata:
+      labels:
+        app: sdn-ryu
+        sdn-lab/pool: ryu
+    spec:
+      containers:
+      - name: ryu
+        image: sdn-ryu:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 6633
+          name: openflow
+        - containerPort: 8080
+          name: rest-api
+        command: ["sleep", "infinity"]
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+
+---
+# RYU Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: sdn-ryu-service
+  namespace: sdn-lab
+spec:
+  selector:
+    app: sdn-ryu
+  ports:
+  - name: openflow
+    protocol: TCP
+    port: 6633
+    targetPort: 6633
+  - name: rest-api
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+  type: ClusterIP
+
+---
+# Horizontal Pod Autoscaler for RYU
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: sdn-ryu-hpa
+  namespace: sdn-lab
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: sdn-ryu
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+# OVS Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sdn-ovs
+  namespace: sdn-lab
+  labels:
+    app: sdn-ovs
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sdn-ovs
+  template:
+    metadata:
+      labels:
+        app: sdn-ovs
+        sdn-lab/pool: ovs
+    spec:
+      containers:
+      - name: ovs
+        image: sdn-ovs:latest
+        imagePullPolicy: Always
+        command: ["sleep", "infinity"]
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"
+
+---
+# Persistent Volume Claims
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+  namespace: sdn-lab
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: frontend-pvc
+  namespace: sdn-lab
+spec:
+  accessModes:
+  - ReadOnlyMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: standard
+
+---
+# Ingress for HTTPS
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sdn-lab-ingress
+  namespace: sdn-lab
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+spec:
+  tls:
+  - hosts:
+    - sdn-lab.yourdomain.com
+    secretName: sdn-lab-tls
+  rules:
+  - host: sdn-lab.yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: sdn-frontend-service
+            port:
+              number: 80
+
+---
+# Network Policy for Pod Security
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sdn-lab-network-policy
+  namespace: sdn-lab
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: sdn-lab
+  egress:
+  - to:
+    - namespaceSelector: {}
+  - to:
+    - podSelector: {}
+
+---
+# Resource Quota for Namespace
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: sdn-lab-quota
+  namespace: sdn-lab
+spec:
+  hard:
+    requests.cpu: "50"
+    requests.memory: "100Gi"
+    limits.cpu: "100"
+    limits.memory: "200Gi"
+    persistentvolumeclaims: "10"
+    pods: "100"
+
+---
+# Limit Range for Default Resource Limits
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: sdn-lab-limits
+  namespace: sdn-lab
+spec:
+  limits:
+  - max:
+      cpu: "2"
+      memory: "2Gi"
+    min:
+      cpu: "100m"
+      memory: "128Mi"
+    default:
+      cpu: "500m"
+      memory: "512Mi"
+    defaultRequest:
+      cpu: "250m"
+      memory: "256Mi"
+    type: Container

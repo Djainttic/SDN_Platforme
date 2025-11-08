@@ -1,0 +1,235 @@
+version: '3.8'
+
+# Production Docker Compose Configuration for SDN Lab Platform
+# Enables per-student isolated container environments
+
+services:
+  # Container Orchestrator API (communicates with Docker daemon)
+  orchestrator-api:
+    build:
+      context: ./orchestrator-api
+      dockerfile: Dockerfile
+    container_name: sdn-orchestrator-api
+    restart: unless-stopped
+    networks:
+      - management
+    ports:
+      - "3001:3001"  # API port
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Docker socket access
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - NODE_ENV=production
+      - MAX_CONCURRENT_CONTAINERS=50
+      - CONTAINER_TIMEOUT=3600  # 1 hour
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for session management and caching
+  redis:
+    image: redis:7-alpine
+    container_name: sdn-redis
+    restart: unless-stopped
+    networks:
+      - management
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 2gb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx reverse proxy (SSL termination and load balancing)
+  nginx:
+    image: nginx:alpine
+    container_name: sdn-nginx
+    restart: unless-stopped
+    networks:
+      - management
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./dist:/usr/share/nginx/html:ro  # Frontend static files
+    depends_on:
+      - orchestrator-api
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Monitoring: Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: sdn-prometheus
+    restart: unless-stopped
+    networks:
+      - management
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+
+  # Monitoring: Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: sdn-grafana
+    restart: unless-stopped
+    networks:
+      - management
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=https://monitoring.yourdomain.com
+    depends_on:
+      - prometheus
+
+  # cAdvisor for container metrics
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: sdn-cadvisor
+    restart: unless-stopped
+    networks:
+      - management
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    devices:
+      - /dev/kmsg
+
+  # Lab Container Pool - Mininet (Pre-warmed containers for faster startup)
+  mininet-pool-1:
+    build:
+      context: ../sdn_lab/mininet
+      dockerfile: Dockerfile
+    image: sdn-mininet:latest
+    container_name: mininet-pool-1
+    restart: "no"  # Managed by orchestrator
+    networks:
+      - student-network
+    privileged: true
+    command: ["sleep", "infinity"]
+    labels:
+      - "sdn-lab.pool=mininet"
+      - "sdn-lab.status=available"
+
+  mininet-pool-2:
+    build:
+      context: ../sdn_lab/mininet
+      dockerfile: Dockerfile
+    image: sdn-mininet:latest
+    container_name: mininet-pool-2
+    restart: "no"
+    networks:
+      - student-network
+    privileged: true
+    command: ["sleep", "infinity"]
+    labels:
+      - "sdn-lab.pool=mininet"
+      - "sdn-lab.status=available"
+
+  # Lab Container Pool - RYU Controller
+  ryu-pool-1:
+    build:
+      context: ../sdn_lab/ryu
+      dockerfile: Dockerfile
+    image: sdn-ryu:latest
+    container_name: ryu-pool-1
+    restart: "no"
+    networks:
+      - student-network
+    command: ["sleep", "infinity"]
+    labels:
+      - "sdn-lab.pool=ryu"
+      - "sdn-lab.status=available"
+
+  # Lab Container Pool - OVS
+  ovs-pool-1:
+    build:
+      context: ../sdn_lab/ovs
+      dockerfile: Dockerfile
+    image: sdn-ovs:latest
+    container_name: ovs-pool-1
+    restart: "no"
+    networks:
+      - student-network
+    privileged: true
+    command: ["sleep", "infinity"]
+    labels:
+      - "sdn-lab.pool=ovs"
+      - "sdn-lab.status=available"
+
+networks:
+  management:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/24
+          gateway: 172.20.0.1
+
+  student-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/16
+          gateway: 172.21.0.1
+    driver_opts:
+      com.docker.network.bridge.name: sdn-students
+      com.docker.network.driver.mtu: 1500
+
+volumes:
+  redis-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+# Production configuration options
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+    compress: "true"
+
+x-resource-limits: &default-limits
+  limits:
+    cpus: '1.0'
+    memory: 512M
+  reservations:
+    cpus: '0.5'
+    memory: 256M

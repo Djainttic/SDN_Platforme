@@ -1,0 +1,817 @@
+{
+  "quiz_questions": [
+    {
+      "section_id": 0,
+      "question": "In a dual-VM setup, which networking mode provides the best isolation while allowing VM-to-VM communication?",
+      "options": ["NAT", "Bridged", "Host-Only", "Internal Network"],
+      "correct_answer": "Host-Only",
+      "explanation": "Host-Only networking creates an isolated network between VMs and the host, perfect for SDN lab setups without external network access.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 0,
+      "question": "What command should you run if Mininet fails to start due to residual state from a previous session?",
+      "options": ["sudo mn --reset", "sudo mn -c", "sudo mn --clean", "sudo killall mn"],
+      "correct_answer": "sudo mn -c",
+      "explanation": "The 'sudo mn -c' command cleans up residual Mininet state including switches, links, and processes.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 0,
+      "question": "When verifying controller-switch connection, what field in 'ovs-vsctl show' output indicates successful connection?",
+      "options": ["controller_status: active", "is_connected: true", "state: connected", "status: online"],
+      "correct_answer": "is_connected: true",
+      "explanation": "The 'is_connected: true' field indicates the switch has successfully established an OpenFlow connection to the controller.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 0,
+      "question": "Which component must be started FIRST in a typical SDN setup?",
+      "options": ["Mininet", "Open vSwitch", "RYU Controller", "Wireshark"],
+      "correct_answer": "RYU Controller",
+      "explanation": "The controller must be running and listening before switches attempt to connect, otherwise connection will fail or timeout.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 0,
+      "question": "What is the significance of the IP address 127.0.0.1 in a single-VM SDN setup?",
+      "options": ["It's the switch management IP", "It's the loopback interface for localhost communication", "It's the default gateway", "It's the DHCP server address"],
+      "correct_answer": "It's the loopback interface for localhost communication",
+      "explanation": "127.0.0.1 is the loopback address allowing the controller and switch to communicate on the same machine.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 0,
+      "question": "In a two-VM setup, what is the most common cause of controller-switch connection failure?",
+      "options": ["Incorrect OpenFlow version", "VMs not on the same subnet", "Insufficient RAM", "Wrong switch type"],
+      "correct_answer": "VMs not on the same subnet",
+      "explanation": "For VMs to communicate, they must be on the same subnet with properly configured static IPs and routing.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 0,
+      "question": "What does the command 'ovs-ofctl dump-flows s1' display?",
+      "options": ["Switch hardware specifications", "Active OpenFlow flow rules", "Port statistics", "Controller logs"],
+      "correct_answer": "Active OpenFlow flow rules",
+      "explanation": "dump-flows shows all flow table entries including match fields, actions, priorities, and statistics.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 0,
+      "question": "If 'pingall' succeeds but with packet loss on first run, what is the likely cause?",
+      "options": ["Faulty network card", "Reactive flow installation delay", "Insufficient bandwidth", "Controller malfunction"],
+      "correct_answer": "Reactive flow installation delay",
+      "explanation": "First packets trigger flow installation (packet-in to controller), causing initial delay. Subsequent packets hit installed flows.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 0,
+      "question": "Which file contains persistent OVS database configuration?",
+      "options": ["/etc/openvswitch/conf.db", "/var/lib/openvswitch/ovs-vswitchd.conf", "/etc/ovs/config.db", "/var/run/openvswitch/db.sock"],
+      "correct_answer": "/etc/openvswitch/conf.db",
+      "explanation": "The conf.db file stores persistent OVS configuration including bridges and controller settings.",
+      "difficulty": "hard",
+      "points": 3
+    },
+    {
+      "section_id": 0,
+      "question": "What is the purpose of the '--topo single,4' parameter in Mininet?",
+      "options": ["Create 4 separate networks", "Create 1 switch with 4 hosts", "Create 4 switches in a line", "Create 4-level tree topology"],
+      "correct_answer": "Create 1 switch with 4 hosts",
+      "explanation": "single,N creates a star topology with one switch and N hosts connected to it.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 1,
+      "question": "What is the key difference between Mininet emulation and network simulation?",
+      "options": ["Emulation is faster", "Emulation uses real Linux network stack", "Simulation is more accurate", "Simulation requires less memory"],
+      "correct_answer": "Emulation uses real Linux network stack",
+      "explanation": "Mininet emulates networks using real kernel networking, providing high-fidelity behavior unlike abstract simulation models.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 1,
+      "question": "Which Mininet command shows all nodes in the current topology?",
+      "options": ["list", "nodes", "show", "dump"],
+      "correct_answer": "nodes",
+      "explanation": "The 'nodes' command lists all hosts, switches, and controllers in the topology.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 1,
+      "question": "What does the 'net' command display in Mininet CLI?",
+      "options": ["Network statistics", "Links and connections between nodes", "IP addresses", "Flow tables"],
+      "correct_answer": "Links and connections between nodes",
+      "explanation": "'net' shows the network topology with all links and their endpoints.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 1,
+      "question": "To run a command on host h1 in Mininet, what is the correct syntax?",
+      "options": ["h1.run('command')", "h1 command", "exec h1 command", "run h1 command"],
+      "correct_answer": "h1 command",
+      "explanation": "Mininet CLI uses simple syntax: <host> <command> to execute commands in that host's namespace.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 1,
+      "question": "What tool does Mininet use internally to create network namespaces?",
+      "options": ["Docker", "LXC", "Linux network namespaces", "VirtualBox"],
+      "correct_answer": "Linux network namespaces",
+      "explanation": "Mininet leverages Linux network namespaces to create isolated network environments for each host.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 1,
+      "question": "If 'link s1 h1 down' is executed, what happens?",
+      "options": ["h1 is removed from topology", "Connection between s1 and h1 is disabled", "s1 stops functioning", "All traffic is blocked"],
+      "correct_answer": "Connection between s1 and h1 is disabled",
+      "explanation": "The link command dynamically enables/disables links, simulating link failures.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 1,
+      "question": "What is the purpose of 'iperf' in Mininet?",
+      "options": ["Measure latency", "Measure TCP/UDP throughput", "Capture packets", "Install flows"],
+      "correct_answer": "Measure TCP/UDP throughput",
+      "explanation": "iperf measures network bandwidth/throughput between two hosts.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 1,
+      "question": "Which topology type creates a tree structure with configurable depth and fanout?",
+      "options": ["linear", "tree", "single", "minimal"],
+      "correct_answer": "tree",
+      "explanation": "The tree topology creates hierarchical structures with specified depth and branching factor.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 1,
+      "question": "What does 'dump' command show in Mininet CLI?",
+      "options": ["Flow tables", "Detailed information about all nodes", "Packet capture", "Error logs"],
+      "correct_answer": "Detailed information about all nodes",
+      "explanation": "'dump' displays detailed info including PIDs, interfaces, and ports for all nodes.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 1,
+      "question": "To create a custom topology with 5 switches in a line, which command is used?",
+      "options": ["sudo mn --topo single,5", "sudo mn --topo linear,5", "sudo mn --topo tree,5", "sudo mn --topo chain,5"],
+      "correct_answer": "sudo mn --topo linear,5",
+      "explanation": "linear,N creates N switches connected in a line, each with one host.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 2,
+      "question": "What is the southbound API protocol used between RYU controller and switches?",
+      "options": ["REST API", "OpenFlow", "NETCONF", "gRPC"],
+      "correct_answer": "OpenFlow",
+      "explanation": "OpenFlow is the standardized protocol for southbound communication between SDN controllers and switches.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 2,
+      "question": "Which RYU event handler processes packets sent from switch to controller?",
+      "options": ["EventOFPSwitchFeatures", "EventOFPPacketIn", "EventOFPFlowMod", "EventOFPStateChange"],
+      "correct_answer": "EventOFPPacketIn",
+      "explanation": "EventOFPPacketIn is triggered when a switch sends a packet to the controller (unknown destination or explicit CONTROLLER action).",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 2,
+      "question": "In the OpenFlow handshake sequence, which message does the controller send first?",
+      "options": ["FEATURES_REQUEST", "HELLO", "SET_CONFIG", "FLOW_MOD"],
+      "correct_answer": "HELLO",
+      "explanation": "HELLO messages are exchanged first to negotiate OpenFlow version between controller and switch.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 2,
+      "question": "What does FEATURES_REPLY message contain?",
+      "options": ["Flow statistics", "Switch capabilities and ports", "Controller configuration", "Network topology"],
+      "correct_answer": "Switch capabilities and ports",
+      "explanation": "FEATURES_REPLY provides switch datapath ID, port information, and supported capabilities.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 2,
+      "question": "Which decorator is used in RYU to register event handlers?",
+      "options": ["@event_handler", "@set_ev_cls", "@ryu_event", "@of_handler"],
+      "correct_answer": "@set_ev_cls",
+      "explanation": "@set_ev_cls(event_class, state) decorator registers methods as OpenFlow event handlers.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 2,
+      "question": "What is the purpose of the datapath object in RYU?",
+      "options": ["Store flow tables", "Represent switch connection", "Handle HTTP requests", "Manage topology"],
+      "correct_answer": "Represent switch connection",
+      "explanation": "Datapath represents a switch connection, providing methods to send OpenFlow messages.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 2,
+      "question": "How does RYU simple_switch_13 handle unknown destination MAC addresses?",
+      "options": ["Drop the packet", "Send PACKET_OUT with FLOOD action", "Install default flow", "Broadcast to all controllers"],
+      "correct_answer": "Send PACKET_OUT with FLOOD action",
+      "explanation": "Unknown destinations are flooded to all ports to discover the destination host.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 2,
+      "question": "What is the default OpenFlow version used by RYU simple_switch_13?",
+      "options": ["OpenFlow 1.0", "OpenFlow 1.2", "OpenFlow 1.3", "OpenFlow 1.5"],
+      "correct_answer": "OpenFlow 1.3",
+      "explanation": "The '13' in simple_switch_13 indicates OpenFlow version 1.3.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 2,
+      "question": "Which command verifies that RYU controller is running and listening?",
+      "options": ["ovs-vsctl show", "netstat -tulpn | grep 6653", "ryu-manager --status", "ofctl check"],
+      "correct_answer": "netstat -tulpn | grep 6653",
+      "explanation": "netstat shows listening ports; RYU typically listens on port 6653 (OpenFlow 1.3).",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 2,
+      "question": "What happens if the controller crashes while switches are running?",
+      "options": ["All traffic stops immediately", "Switches revert to L2 learning mode", "Existing flows continue to work", "Switches shut down"],
+      "correct_answer": "Existing flows continue to work",
+      "explanation": "Installed flows remain in switch flow tables and continue forwarding; only new flows cannot be installed.",
+      "difficulty": "medium",
+      "points": 2
+    }
+  ]
+}
+  ,
+    {
+      "section_id": 3,
+      "question": "What is the difference between ovs-vsctl and ovs-ofctl?",
+      "options": ["No difference, they are aliases", "ovs-vsctl manages bridge configuration, ovs-ofctl manages OpenFlow flows", "ovs-vsctl is for OpenFlow 1.0, ovs-ofctl is for OpenFlow 1.3", "ovs-vsctl shows statistics, ovs-ofctl modifies flows"],
+      "correct_answer": "ovs-vsctl manages bridge configuration, ovs-ofctl manages OpenFlow flows",
+      "explanation": "ovs-vsctl configures switches and bridges (OVSDB), while ovs-ofctl manages OpenFlow flow tables.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 3,
+      "question": "If two flows match the same packet, which one is selected?",
+      "options": ["First installed flow", "Last installed flow", "Flow with higher priority", "Flow with more specific match"],
+      "correct_answer": "Flow with higher priority",
+      "explanation": "OpenFlow always selects the highest priority matching flow. Priority values range from 0-65535.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 3,
+      "question": "What does 'actions=drop' do in a flow rule?",
+      "options": ["Sends packet to controller", "Silently discards the packet", "Logs the packet", "Delays the packet"],
+      "correct_answer": "Silently discards the packet",
+      "explanation": "Drop action discards packets without notification, effectively blocking matching traffic.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 3,
+      "question": "What is the hexadecimal value for ARP ethernet type?",
+      "options": ["0x0800", "0x0806", "0x86dd", "0x8100"],
+      "correct_answer": "0x0806",
+      "explanation": "ARP uses ethernet type 0x0806. IP is 0x0800, IPv6 is 0x86dd.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 3,
+      "question": "Which match field is used for matching destination MAC address?",
+      "options": ["dl_dst", "mac_dst", "eth_dst", "dst_mac"],
+      "correct_answer": "dl_dst",
+      "explanation": "dl_dst (data link destination) matches destination MAC address in OpenFlow.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 3,
+      "question": "To match on TCP destination port 80, which fields are required?",
+      "options": ["dl_type=0x0800, tp_dst=80", "dl_type=0x0800, nw_proto=6, tp_dst=80", "nw_proto=6, tp_dst=80", "tcp_dst=80"],
+      "correct_answer": "dl_type=0x0800, nw_proto=6, tp_dst=80",
+      "explanation": "Must specify IP (0x0800), TCP (proto 6), then transport port. Match fields are hierarchical.",
+      "difficulty": "hard",
+      "points": 3
+    },
+    {
+      "section_id": 3,
+      "question": "What does 'actions=normal' do?",
+      "options": ["Drops packets", "Processes packet using standard L2/L3 forwarding", "Sends to controller", "Floods to all ports"],
+      "correct_answer": "Processes packet using standard L2/L3 forwarding",
+      "explanation": "NORMAL action uses traditional switch behavior (MAC learning, VLAN, etc.).",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 3,
+      "question": "What is the default flow priority if not specified?",
+      "options": ["0", "100", "32768", "65535"],
+      "correct_answer": "32768",
+      "explanation": "Default priority is 32768 (middle of 0-65535 range).",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 3,
+      "question": "How do you view port statistics for all ports on s1?",
+      "options": ["ovs-ofctl dump-stats s1", "ovs-ofctl dump-ports s1", "ovs-vsctl show s1", "ovs-ofctl show s1"],
+      "correct_answer": "ovs-ofctl dump-ports s1",
+      "explanation": "dump-ports displays RX/TX statistics for each port.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 3,
+      "question": "What does 'n_packets' represent in flow statistics?",
+      "options": ["Number of flow rules", "Number of ports", "Number of packets matched by this flow", "Network packet rate"],
+      "correct_answer": "Number of packets matched by this flow",
+      "explanation": "n_packets is a counter showing how many packets matched this specific flow rule.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 4,
+      "question": "What is reactive flow installation?",
+      "options": ["Flows installed by administrator", "Flows installed when first packet arrives", "Flows installed at switch startup", "Flows that react to errors"],
+      "correct_answer": "Flows installed when first packet arrives",
+      "explanation": "Reactive mode: controller installs flows in response to PACKET_IN events (on-demand).",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 4,
+      "question": "What is the main disadvantage of reactive flow installation?",
+      "options": ["Higher controller load", "First packet latency penalty", "Memory usage", "All of the above"],
+      "correct_answer": "All of the above",
+      "explanation": "Reactive mode incurs first-packet delay, controller processing load, and memory for state.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 4,
+      "question": "In proactive mode, when are flows installed?",
+      "options": ["When traffic arrives", "Before any traffic", "After first packet", "Only when requested"],
+      "correct_answer": "Before any traffic",
+      "explanation": "Proactive flows are pre-installed, eliminating first-packet delay.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 4,
+      "question": "What action sends a packet to the controller?",
+      "options": ["SEND_TO_CONTROLLER", "CONTROLLER", "PACKET_IN", "FORWARD_TO_CONTROLLER"],
+      "correct_answer": "CONTROLLER",
+      "explanation": "CONTROLLER action sends packet to controller as PACKET_IN message.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 4,
+      "question": "What is a table-miss entry?",
+      "options": ["An error condition", "Default flow with priority 0", "Missing flow table", "Flow installation failure"],
+      "correct_answer": "Default flow with priority 0",
+      "explanation": "Table-miss (priority 0) matches packets that don't match any higher-priority flows.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 4,
+      "question": "What does idle_timeout do?",
+      "options": ["Sets maximum flow age", "Removes flow if unused for N seconds", "Sets controller timeout", "Pauses flow processing"],
+      "correct_answer": "Removes flow if unused for N seconds",
+      "explanation": "idle_timeout expires flow after N seconds without matching packets.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 4,
+      "question": "What is hard_timeout?",
+      "options": ["Timeout for difficult flows", "Absolute expiration time regardless of use", "Timeout after packet drop", "Controller connection timeout"],
+      "correct_answer": "Absolute expiration time regardless of use",
+      "explanation": "hard_timeout removes flow after N seconds regardless of activity.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 4,
+      "question": "Which OpenFlow message installs a flow rule?",
+      "options": ["PACKET_OUT", "FLOW_MOD", "FLOW_ADD", "INSTALL_FLOW"],
+      "correct_answer": "FLOW_MOD",
+      "explanation": "FLOW_MOD message modifies flow table (add, delete, modify flows).",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 4,
+      "question": "What triggers a PACKET_IN event?",
+      "options": ["Switch startup", "Table-miss or CONTROLLER action", "Flow expiration", "Port down"],
+      "correct_answer": "Table-miss or CONTROLLER action",
+      "explanation": "PACKET_IN occurs when packet doesn't match any flow (table-miss) or explicitly sent via CONTROLLER action.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 4,
+      "question": "In a reactive controller, what happens after receiving PACKET_IN?",
+      "options": ["Drop the packet", "Forward immediately", "Make forwarding decision and install flow", "Log the event"],
+      "correct_answer": "Make forwarding decision and install flow",
+      "explanation": "Controller processes packet, makes decision, installs flow (FLOW_MOD), and typically sends PACKET_OUT.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 5,
+      "question": "What Wireshark filter captures OpenFlow 1.3 traffic?",
+      "options": ["openflow", "openflow_v4", "of13", "openflow1.3"],
+      "correct_answer": "openflow_v4",
+      "explanation": "openflow_v4 filter captures OpenFlow version 1.3 packets in Wireshark.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 5,
+      "question": "Which messages are part of the OpenFlow handshake?",
+      "options": ["CONNECT, ACCEPT, READY", "HELLO, FEATURES_REQUEST, FEATURES_REPLY", "START, CONFIG, ACK", "INIT, SYNC, READY"],
+      "correct_answer": "HELLO, FEATURES_REQUEST, FEATURES_REPLY",
+      "explanation": "Handshake: HELLO for version negotiation, FEATURES_REQUEST to query capabilities, FEATURES_REPLY with switch info.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 5,
+      "question": "What protocol does RYU GUI use for topology discovery?",
+      "options": ["OSPF", "LLDP", "BGP", "STP"],
+      "correct_answer": "LLDP",
+      "explanation": "LLDP (Link Layer Discovery Protocol) discovers links between switches for topology mapping.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 5,
+      "question": "How do you capture traffic on the loopback interface for local SDN traffic?",
+      "options": ["tcpdump -i lo", "wireshark lo", "Both A and B", "Cannot capture loopback"],
+      "correct_answer": "Both A and B",
+      "explanation": "Both tcpdump and Wireshark can capture on loopback (lo) interface for local controller traffic.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 5,
+      "question": "What information does 'ovs-ofctl dump-flows' provide?",
+      "options": ["Only match fields", "Only actions", "Match fields, actions, priority, and statistics", "Only statistics"],
+      "correct_answer": "Match fields, actions, priority, and statistics",
+      "explanation": "dump-flows shows complete flow entries including all fields and counters.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 5,
+      "question": "What does 'duration_sec' in flow statistics indicate?",
+      "options": ["Packet processing time", "How long the flow has existed", "Timeout value", "Controller response time"],
+      "correct_answer": "How long the flow has existed",
+      "explanation": "duration_sec shows the age of the flow entry since installation.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 5,
+      "question": "In port statistics, what does 'tx_packets' represent?",
+      "options": ["Total packets", "Received packets", "Transmitted packets", "Dropped packets"],
+      "correct_answer": "Transmitted packets",
+      "explanation": "tx_packets counts packets sent out of that port (TX = transmit).",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 5,
+      "question": "What is the purpose of flow statistics collection?",
+      "options": ["Only for debugging", "Only for billing", "Traffic analysis, monitoring, and optimization", "Controller synchronization"],
+      "correct_answer": "Traffic analysis, monitoring, and optimization",
+      "explanation": "Statistics enable traffic engineering, anomaly detection, capacity planning, and performance optimization.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 5,
+      "question": "How can you identify which flow is handling most traffic?",
+      "options": ["Check priority", "Check duration", "Check n_bytes counter", "Check match fields"],
+      "correct_answer": "Check n_bytes counter",
+      "explanation": "n_bytes shows total bytes matched by each flow; highest value indicates most traffic.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 5,
+      "question": "What does the RYU GUI Flow Manager visualize?",
+      "options": ["Only switches", "Only flows", "Topology, switches, links, and flows", "Only statistics"],
+      "correct_answer": "Topology, switches, links, and flows",
+      "explanation": "Flow Manager provides complete network visualization including topology and flow entries.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 6,
+      "question": "What is MiniEdit?",
+      "options": ["Text editor for Mininet", "Graphical topology editor for Mininet", "Mininet configuration file", "Flow table editor"],
+      "correct_answer": "Graphical topology editor for Mininet",
+      "explanation": "MiniEdit is a GUI tool for visually designing and exporting Mininet topologies.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 6,
+      "question": "What does 'Export Level 2 Script' do in MiniEdit?",
+      "options": ["Exports L2 configuration", "Exports Python API topology script", "Exports flow tables", "Exports switch config"],
+      "correct_answer": "Exports Python API topology script",
+      "explanation": "Level 2 export creates a Python script using Mininet API to recreate the topology.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 6,
+      "question": "In Mininet Python API, which method adds a switch?",
+      "options": ["self.createSwitch()", "self.addSwitch()", "self.newSwitch()", "self.switch()"],
+      "correct_answer": "self.addSwitch()",
+      "explanation": "self.addSwitch('name') adds a switch to custom topology.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 6,
+      "question": "How do you specify link bandwidth in Mininet?",
+      "options": ["bandwidth=10", "bw=10", "speed=10", "rate=10"],
+      "correct_answer": "bw=10",
+      "explanation": "addLink(..., bw=10) sets bandwidth to 10 Mbps.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 6,
+      "question": "What parameter sets link delay in Mininet?",
+      "options": ["latency='5ms'", "delay='5ms'", "lag='5ms'", "wait='5ms'"],
+      "correct_answer": "delay='5ms'",
+      "explanation": "addLink(..., delay='5ms') sets propagation delay.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 6,
+      "question": "To run a custom topology script, which command is used?",
+      "options": ["sudo mn mytopo.py", "sudo mn --custom mytopo.py --topo mytopo", "sudo python mytopo.py", "sudo mn --load mytopo.py"],
+      "correct_answer": "sudo mn --custom mytopo.py --topo mytopo",
+      "explanation": "--custom loads the file, --topo specifies which topology class to use.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 6,
+      "question": "What is the parent class for custom Mininet topologies?",
+      "options": ["Topology", "Topo", "Network", "MininetTopo"],
+      "correct_answer": "Topo",
+      "explanation": "Custom topologies inherit from mininet.topo.Topo class.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 6,
+      "question": "Which method must be implemented in a custom Topo class?",
+      "options": ["create()", "build()", "setup()", "initialize()"],
+      "correct_answer": "build()",
+      "explanation": "build() method defines the topology structure (switches, hosts, links).",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 6,
+      "question": "How do you create a link with packet loss in Mininet?",
+      "options": ["loss=10", "drop=10", "packetloss=10", "error=10"],
+      "correct_answer": "loss=10",
+      "explanation": "addLink(..., loss=10) sets 10% packet loss.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 6,
+      "question": "What advantage does code-based topology have over GUI?",
+      "options": ["Easier to use", "Version control and automation", "Better visualization", "Faster creation"],
+      "correct_answer": "Version control and automation",
+      "explanation": "Python scripts enable version control, parameterization, and automated testing.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 7,
+      "question": "What is the basic packet-in → decision → flow-mod cycle?",
+      "options": ["Error handling cycle", "Controller decision-making process for unknown traffic", "Flow timeout mechanism", "Switch startup sequence"],
+      "correct_answer": "Controller decision-making process for unknown traffic",
+      "explanation": "Unknown packet → PACKET_IN → controller decides → installs flow via FLOW_MOD.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 7,
+      "question": "How does L2 learning switch determine output port?",
+      "options": ["Random selection", "Round-robin", "MAC address table lookup", "Priority-based"],
+      "correct_answer": "MAC address table lookup",
+      "explanation": "Learning switch maintains mac_to_port table and uses destination MAC to find output port.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 7,
+      "question": "What happens when L2 switch receives packet with unknown destination MAC?",
+      "options": ["Drop packet", "Send to controller", "Flood to all ports", "Buffer and wait"],
+      "correct_answer": "Flood to all ports",
+      "explanation": "Unknown destinations are flooded to discover host location.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 7,
+      "question": "In an L3 router application, how should ARP be handled?",
+      "options": ["Drop ARP", "Forward like IP", "Flood ARP packets", "Send to controller"],
+      "correct_answer": "Flood ARP packets",
+      "explanation": "ARP is broadcast protocol and must be flooded for address resolution to work.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 7,
+      "question": "What is the purpose of VLAN-like isolation in SDN?",
+      "options": ["Increase speed", "Separate traffic between groups", "Reduce controller load", "Improve security"],
+      "correct_answer": "Separate traffic between groups",
+      "explanation": "Isolation prevents communication between specified groups, providing segmentation.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 7,
+      "question": "In a firewall app, what action blocks traffic?",
+      "options": ["REJECT", "DROP", "BLOCK", "DENY"],
+      "correct_answer": "DROP",
+      "explanation": "DROP action silently discards packets matching firewall rule.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 7,
+      "question": "What is the difference between hub and L2 switch behavior?",
+      "options": ["No difference", "Hub floods all, switch learns and forwards selectively", "Hub is faster", "Switch floods all"],
+      "correct_answer": "Hub floods all, switch learns and forwards selectively",
+      "explanation": "Hub always floods; switch learns MAC addresses to forward intelligently.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 7,
+      "question": "Why install bidirectional flows in L2 switch?",
+      "options": ["Required by OpenFlow", "Enables full-duplex communication", "Reduces controller load", "Both B and C"],
+      "correct_answer": "Both B and C",
+      "explanation": "Bidirectional flows enable two-way traffic and reduce PACKET_IN events.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 7,
+      "question": "What Python data structure is commonly used for MAC learning table?",
+      "options": ["List", "Dictionary/Dict", "Set", "Array"],
+      "correct_answer": "Dictionary/Dict",
+      "explanation": "Dictionary provides fast lookup: mac_to_port[mac_addr] = port_number.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 7,
+      "question": "In RYU, how do you send a PACKET_OUT message?",
+      "options": ["datapath.send_packet()", "datapath.send_msg(packet_out)", "controller.forward()", "switch.output()"],
+      "correct_answer": "datapath.send_msg(packet_out)",
+      "explanation": "datapath.send_msg() sends OpenFlow messages including PACKET_OUT.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 8,
+      "question": "What is the primary goal of a load balancer in SDN?",
+      "options": ["Increase security", "Distribute traffic across multiple servers", "Monitor traffic", "Cache content"],
+      "correct_answer": "Distribute traffic across multiple servers",
+      "explanation": "Load balancer distributes client requests across backend server pool for scalability and availability.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 8,
+      "question": "What is round-robin load balancing?",
+      "options": ["Random server selection", "Least connections first", "Sequential rotation through servers", "Weighted distribution"],
+      "correct_answer": "Sequential rotation through servers",
+      "explanation": "Round-robin cycles through server list: server1, server2, server3, server1, ...",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 8,
+      "question": "In load balancer implementation, what must be rewritten?",
+      "options": ["Only destination IP", "Only destination MAC", "Destination IP and MAC", "Source and destination"],
+      "correct_answer": "Destination IP and MAC",
+      "explanation": "Load balancer rewrites destination to selected backend server's IP and MAC address.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 8,
+      "question": "What is the purpose of an IDS in SDN?",
+      "options": ["Install flows", "Detect suspicious traffic patterns", "Balance load", "Cache data"],
+      "correct_answer": "Detect suspicious traffic patterns",
+      "explanation": "IDS (Intrusion Detection System) monitors traffic for attack signatures and anomalies.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 8,
+      "question": "What traffic pattern indicates a port scan attack?",
+      "options": ["High bandwidth usage", "Many connections to different ports from same source", "Large packets", "Frequent reconnections"],
+      "correct_answer": "Many connections to different ports from same source",
+      "explanation": "Port scans probe multiple ports sequentially to discover open services.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 8,
+      "question": "What is DDoS?",
+      "options": ["Distributed Denial of Service", "Dynamic Data Operation System", "Direct Data Output Service", "Distributed Database Service"],
+      "correct_answer": "Distributed Denial of Service",
+      "explanation": "DDoS overwhelms target with traffic from multiple sources, exhausting resources.",
+      "difficulty": "easy",
+      "points": 1
+    },
+    {
+      "section_id": 8,
+      "question": "How can SDN mitigate DDoS attacks?",
+      "options": ["Increase bandwidth", "Rate-limit or block attack sources dynamically", "Ignore traffic", "Restart switches"],
+      "correct_answer": "Rate-limit or block attack sources dynamically",
+      "explanation": "SDN controller can detect attack patterns and install flows to block or rate-limit attackers.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 8,
+      "question": "What metric is used to detect traffic rate anomalies?",
+      "options": ["Packet size", "Packets per second from source IP", "Protocol type", "Port number"],
+      "correct_answer": "Packets per second from source IP",
+      "explanation": "Abnormal packet rates (e.g., >10000 pps) indicate flooding attacks.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 8,
+      "question": "In a stateful firewall, what must be tracked?",
+      "options": ["Only IP addresses", "Connection state (established, new)", "Only port numbers", "Packet size"],
+      "correct_answer": "Connection state (established, new)",
+      "explanation": "Stateful firewall tracks connection state to allow return traffic for established connections.",
+      "difficulty": "medium",
+      "points": 2
+    },
+    {
+      "section_id": 8,
+      "question": "What is a false positive in IDS context?",
+      "options": ["Missed attack", "Legitimate traffic flagged as attack", "Correct detection", "System error"],
+      "correct_answer": "Legitimate traffic flagged as attack",
+      "explanation": "False positive: IDS incorrectly identifies normal traffic as malicious.",
+      "difficulty": "medium",
+      "points": 2
+    }
+  ]
+}

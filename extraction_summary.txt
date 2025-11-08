@@ -1,0 +1,20 @@
+EXTRACTION COMPLETE
+
+Total exercises: 42
+Total quizzes: 60
+
+Exercises by section:
+  Section 3: 7
+  Section 4: 7
+  Section 5: 7
+  Section 6: 7
+  Section 7: 7
+  Section 8: 7
+
+Quizzes by section:
+  Section 3: 10
+  Section 4: 10
+  Section 5: 10
+  Section 6: 10
+  Section 7: 10
+  Section 8: 10

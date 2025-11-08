@@ -1,0 +1,32 @@
+[
+  {
+    "section_id": 0,
+    "exercise_id": "ex0_verify_tools",
+    "title": "Verify SDN Tool Installation",
+    "description": "Confirm that all required SDN tools are properly installed and functional",
+    "instructions": "1. Open a terminal\n2. Run 'sudo mn --version' to check Mininet\n3. Run 'ryu-manager --version' to check RYU\n4. Run 'ovs-vsctl --version' to check Open vSwitch\n5. Document the version numbers",
+    "expected_output": "Mininet 2.3.0+, RYU 4.34+, OVS 2.13.0+",
+    "hints": ["Ensure you have sudo privileges", "If tools are missing, install via apt or pip"],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 0,
+    "exercise_id": "ex0_single_vm",
+    "title": "Single-VM Controller Connection",
+    "description": "Set up and verify a working SDN environment",
+    "instructions": "1. Start RYU controller\n2. Start Mininet with remote controller\n3. Verify connection with ovs-vsctl show\n4. Test with pingall",
+    "expected_output": "Controller connected, 0% packet loss",
+    "hints": ["Start controller first", "Check port 6633 or 6653"],
+    "difficulty": "beginner"
+  },
+  {
+    "section_id": 1,
+    "exercise_id": "ex1_mininet_cli",
+    "title": "Exploring Mininet CLI",
+    "description": "Practice essential Mininet command-line operations",
+    "instructions": "1. Start Mininet with minimal topology\n2. Run 'nodes' command\n3. Run 'net' command\n4. Run 'pingall'\n5. Document outputs",
+    "expected_output": "Understanding of network structure",
+    "hints": ["Use 'help' command for command list"],
+    "difficulty": "beginner"
+  }
+]
