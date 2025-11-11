@@ -2,14 +2,14 @@
 import json
 import sys
 
-def extract_exercises(filename):
-    """Extract all exercises from malformed JSON file"""
-    all_exercises = []
+def extract_json_content(filename, content_key):
+    """Extract all content from a potentially malformed JSON file"""
+    all_content = []
     
     with open(filename, 'r') as f:
         content = f.read()
     
-    # First, try to extract the initial {"exercises": [...]} object
+    # First, try to extract the initial {content_key: [...]} object
     try:
         # Find the first complete object
         depth = 0
@@ -24,9 +24,9 @@ def extract_exercises(filename):
                     break
         
         first_obj = json.loads(content[:end_pos])
-        if 'exercises' in first_obj:
-            all_exercises.extend(first_obj['exercises'])
-            print(f"Extracted {len(first_obj['exercises'])} from first object", file=sys.stderr)
+        if content_key in first_obj:
+            all_content.extend(first_obj[content_key])
+            print(f"Extracted {len(first_obj[content_key])} from first object", file=sys.stderr)
         
         # Now parse remaining individual objects
         remaining = content[end_pos:].strip()
@@ -58,19 +58,19 @@ def extract_exercises(filename):
             try:
                 obj = json.loads(part)
                 if isinstance(obj, dict) and 'section_id' in obj:
-                    all_exercises.append(obj)
+                    all_content.append(obj)
                 elif isinstance(obj, list):
-                    all_exercises.extend(obj)
+                    all_content.extend(obj)
             except json.JSONDecodeError as e:
                 print(f"Skipping part {i}: {str(e)[:50]}", file=sys.stderr)
     
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
     
-    return all_exercises
+    return all_content
 
 # Extract exercises
-exercises = extract_exercises('sample_lab_content.json')
+exercises = extract_json_content('sample_lab_content.json', 'exercises')
 print(f"Total exercises extracted: {len(exercises)}", file=sys.stderr)
 
 # Save to file
@@ -80,7 +80,7 @@ with open('exercises_clean.json', 'w') as f:
 print(f"Saved {len(exercises)} exercises to exercises_clean.json", file=sys.stderr)
 
 # Do the same for quizzes
-quizzes = extract_exercises('sample_quiz_questions_1.json')
+quizzes = extract_json_content('sample_quiz_questions_1.json', 'quiz_questions')
 print(f"Total quizzes extracted: {len(quizzes)}", file=sys.stderr)
 
 with open('quizzes_clean.json', 'w') as f:
